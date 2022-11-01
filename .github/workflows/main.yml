@@ -4,14 +4,19 @@ on: [push]
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+        BUCKET: testing-s3sync-000
+        REGION: us-east-1
     steps:
-    - uses: actions/checkout@master
-    # - run: aws s3 ls
-    - uses: jakejarvis/s3-sync-action@master
-      with:
-        args: --acl public-read --follow-symlinks --delete --exclude '.git*/*'
-      env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS-SESSION-TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: configure aws cred.
+      uses: aws-actions/configure-aws-credentials@v1
+      with
+        # AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region: ${{ env.REGION}}
+        # SOURCE_DIR: 'public'
